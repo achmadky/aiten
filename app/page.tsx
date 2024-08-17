@@ -1,12 +1,8 @@
 "use client";
 
-import clsx from "clsx";
 import { useActionState, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { EnterIcon, LoadingIcon } from "@/lib/icons";
-import { usePlayer } from "@/lib/usePlayer";
-import { track } from "@vercel/analytics";
-import { useMicVAD, utils } from "@ricky0123/vad-react";
 
 type Message = {
 	role: "user" | "assistant";
@@ -17,39 +13,6 @@ type Message = {
 export default function Home() {
 	const [input, setInput] = useState("");
 	const inputRef = useRef<HTMLInputElement>(null);
-	const player = usePlayer();
-
-	const vad = useMicVAD({
-		startOnLoad: true,
-		onSpeechEnd: (audio) => {
-			player.stop();
-			const wav = utils.encodeWAV(audio);
-			const blob = new Blob([wav], { type: "audio/wav" });
-			submit(blob);
-			const isFirefox = navigator.userAgent.includes("Firefox");
-			if (isFirefox) vad.pause();
-		},
-		workletURL: "/vad.worklet.bundle.min.js",
-		modelURL: "/silero_vad.onnx",
-		positiveSpeechThreshold: 0.6,
-		minSpeechFrames: 4,
-		ortConfig(ort) {
-			const isSafari = /^((?!chrome|android).)*safari/i.test(
-				navigator.userAgent
-			);
-
-			ort.env.wasm = {
-				wasmPaths: {
-					"ort-wasm-simd-threaded.wasm":
-						"/ort-wasm-simd-threaded.wasm",
-					"ort-wasm-simd.wasm": "/ort-wasm-simd.wasm",
-					"ort-wasm.wasm": "/ort-wasm.wasm",
-					"ort-wasm-threaded.wasm": "/ort-wasm-threaded.wasm",
-				},
-				numThreads: isSafari ? 1 : 4,
-			};
-		},
-	});
 
 	useEffect(() => {
 		function keyDown(e: KeyboardEvent) {
@@ -59,41 +22,20 @@ export default function Home() {
 
 		window.addEventListener("keydown", keyDown);
 		return () => window.removeEventListener("keydown", keyDown);
-	});
+	}, []);
 
 	const [messages, submit, isPending] = useActionState<
 		Array<Message>,
-		string | Blob
-	>(async (prevMessages, data) => {
-		const formData = new FormData();
-
-		if (typeof data === "string") {
-			formData.append("input", data);
-			track("Text input");
-		} else {
-			formData.append("input", data, "audio.wav");
-			track("Speech input");
-		}
-
-		for (const message of prevMessages) {
-			formData.append("message", JSON.stringify(message));
-		}
-
+		string
+	>(async (prevMessages, foodName) => {
 		const submittedAt = Date.now();
 
-		const response = await fetch("/api", {
-			method: "POST",
-			body: formData,
+		// Pass the food name as a query parameter in the URL
+		const response = await fetch(`/api/food?name=${encodeURIComponent(foodName)}`, {
+			method: "GET",
 		});
 
-		const transcript = decodeURIComponent(
-			response.headers.get("X-Transcript") || ""
-		);
-		const text = decodeURIComponent(
-			response.headers.get("X-Response") || ""
-		);
-
-		if (!response.ok || !transcript || !text || !response.body) {
+		if (!response.ok) {
 			if (response.status === 429) {
 				toast.error("Too many requests. Please try again later.");
 			} else {
@@ -103,22 +45,19 @@ export default function Home() {
 			return prevMessages;
 		}
 
+		const foodInfo = await response.json();
+
 		const latency = Date.now() - submittedAt;
-		player.play(response.body, () => {
-			const isFirefox = navigator.userAgent.includes("Firefox");
-			if (isFirefox) vad.start();
-		});
-		setInput(transcript);
 
 		return [
 			...prevMessages,
 			{
 				role: "user",
-				content: transcript,
+				content: foodName,
 			},
 			{
 				role: "assistant",
-				content: text,
+				content: JSON.stringify(foodInfo, null, 2),
 				latency,
 			},
 		];
@@ -141,7 +80,7 @@ export default function Home() {
 					type="text"
 					className="bg-transparent focus:outline-none p-4 w-full placeholder:text-neutral-600 dark:placeholder:text-neutral-400"
 					required
-					placeholder="Ask me anything"
+					placeholder="Enter a food item"
 					value={input}
 					onChange={(e) => setInput(e.target.value)}
 					ref={inputRef}
@@ -160,7 +99,7 @@ export default function Home() {
 			<div className="text-neutral-400 dark:text-neutral-600 pt-4 text-center max-w-xl text-balance min-h-28 space-y-4">
 				{messages.length > 0 && (
 					<p>
-						{messages.at(-1)?.content}
+						<pre>{messages.at(-1)?.content}</pre>
 						<span className="text-xs font-mono text-neutral-300 dark:text-neutral-700">
 							{" "}
 							({messages.at(-1)?.latency}ms)
@@ -169,44 +108,9 @@ export default function Home() {
 				)}
 
 				{messages.length === 0 && (
-					<>
-						<p>
-							A fast, open-source voice assistant powered by{" "}
-							<A href="https://groq.com">Groq</A>,{" "}
-							<A href="https://cartesia.ai">Cartesia</A>,{" "}
-							<A href="https://www.vad.ricky0123.com/">VAD</A>,
-							and <A href="https://vercel.com">Vercel</A>.{" "}
-							<A
-								href="https://github.com/ai-ng/swift"
-								target="_blank"
-							>
-								Learn more
-							</A>
-							.
-						</p>
-
-						{vad.loading ? (
-							<p>Loading speech detection...</p>
-						) : vad.errored ? (
-							<p>Failed to load speech detection.</p>
-						) : (
-							<p>Start talking to chat.</p>
-						)}
-					</>
+					<p>Enter a food item to get information.</p>
 				)}
 			</div>
-
-			<div
-				className={clsx(
-					"absolute size-36 blur-3xl rounded-full bg-gradient-to-b from-red-200 to-red-400 dark:from-red-600 dark:to-red-800 -z-50 transition ease-in-out",
-					{
-						"opacity-0": vad.loading || vad.errored,
-						"opacity-30":
-							!vad.loading && !vad.errored && !vad.userSpeaking,
-						"opacity-100 scale-110": vad.userSpeaking,
-					}
-				)}
-			/>
 		</>
 	);
 }
