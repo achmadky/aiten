@@ -10,6 +10,12 @@ type Message = {
 	latency?: number;
 };
 
+type FoodInfo = {
+	name: string;
+	cholesterol: string;
+	calories: string;
+};
+
 export default function Home() {
 	const [input, setInput] = useState("");
 	const inputRef = useRef<HTMLInputElement>(null);
@@ -30,7 +36,6 @@ export default function Home() {
 	>(async (prevMessages, foodName) => {
 		const submittedAt = Date.now();
 
-		// Pass the food name as a query parameter in the URL
 		const response = await fetch(`/api/food?name=${encodeURIComponent(foodName)}`, {
 			method: "GET",
 		});
@@ -45,9 +50,16 @@ export default function Home() {
 			return prevMessages;
 		}
 
-		const foodInfo = await response.json();
+		const foodInfo: { food?: FoodInfo; error?: string } = await response.json();
 
 		const latency = Date.now() - submittedAt;
+
+		let assistantMessage = "Food information not found.";
+		if (foodInfo.food) {
+			assistantMessage = `Name: ${foodInfo.food.name}\nCholesterol: ${foodInfo.food.cholesterol}\nCalories: ${foodInfo.food.calories}`;
+		} else if (foodInfo.error) {
+			assistantMessage = foodInfo.error;
+		}
 
 		return [
 			...prevMessages,
@@ -57,7 +69,7 @@ export default function Home() {
 			},
 			{
 				role: "assistant",
-				content: JSON.stringify(foodInfo, null, 2),
+				content: assistantMessage,
 				latency,
 			},
 		];
