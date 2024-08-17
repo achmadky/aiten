@@ -143,7 +143,7 @@ export default function Home() {
         </button>
 
         {filteredSuggestions.length > 0 && (
-          <ul className="bg-neutral-100/80 dark:bg-neutral-800/80 border border-neutral-300 dark:border-neutral-700 rounded-lg max-h-40 overflow-y-auto w-60 absolute top-full mt-1 left-1/2 transform -translate-x-1/2 z-10">
+          <ul className="bg-neutral-100/80 dark:bg-neutral-800/80 border border-neutral-300 dark:border-neutral-700 rounded-lg max-h-40 overflow-y-auto w-60 absolute top-full mt-1 left-1/2 transform -translate-x-1/2 z-10 custom-scrollbar">
             {filteredSuggestions.map((suggestion, index) => (
               <li
                 key={index}
@@ -172,6 +172,30 @@ export default function Home() {
           <p>Enter a food item to get information.</p>
         )}
       </div>
+
+      <style jsx global>{`
+        .custom-scrollbar::-webkit-scrollbar {
+          width: 8px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-track {
+          background: transparent;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+          background: rgba(0, 0, 0, 0.2);
+          border-radius: 10px;
+          transition: background 0.3s ease;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+          background: rgba(0, 0, 0, 0.5);
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb:active {
+          background: rgba(0, 0, 0, 0.8);
+        }
+      `}</style>
     </>
   );
 }
