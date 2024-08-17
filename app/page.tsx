@@ -144,7 +144,7 @@ export default function Home() {
       </form>
 
       {filteredSuggestions.length > 0 && (
-        <ul className="bg-neutral-100 dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 mt-2 rounded-lg max-h-40 overflow-y-auto">
+        <ul className="bg-neutral-100 dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 mt-2 rounded-lg max-h-40 overflow-y-auto w-60">
           {filteredSuggestions.map((suggestion, index) => (
             <li
               key={index}
