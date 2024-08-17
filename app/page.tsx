@@ -74,7 +74,7 @@ export default function Home() {
 
     let assistantMessage = "Food information not found.";
     if (foodInfo.food) {
-      assistantMessage = `Name: ${foodInfo.food.name}\nCholesterol: ${foodInfo.food.cholesterol}\nCalories: ${foodInfo.food.calories}`;
+      assistantMessage = `Food Name: ${foodInfo.food.name}\nCholesterol: ${foodInfo.food.cholesterol}\nCalories: ${foodInfo.food.calories}`;
     } else if (foodInfo.error) {
       assistantMessage = foodInfo.error;
     }
