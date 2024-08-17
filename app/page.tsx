@@ -120,7 +120,7 @@ export default function Home() {
       <div className="pb-4 min-h-28" />
 
       <form
-        className="rounded-full bg-neutral-200/80 dark:bg-neutral-800/80 flex items-center w-full max-w-md border border-transparent hover:border-neutral-300 focus-within:border-neutral-400 hover:focus-within:border-neutral-400 dark:hover:border-neutral-700 dark:focus-within:border-neutral-600 dark:hover:focus-within:border-neutral-600"
+        className="rounded-full bg-neutral-200/80 dark:bg-neutral-800/80 flex items-center w-full max-w-md border border-transparent hover:border-neutral-300 focus-within:border-neutral-400 hover:focus-within:border-neutral-400 dark:hover:border-neutral-700 dark:focus-within:border-neutral-600 dark:hover:focus-within:border-neutral-600 relative"
         onSubmit={handleFormSubmit}
       >
         <input
@@ -141,21 +141,21 @@ export default function Home() {
         >
           {isPending ? <LoadingIcon /> : <EnterIcon />}
         </button>
-      </form>
 
-      {filteredSuggestions.length > 0 && (
-        <ul className="bg-neutral-100 dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 mt-2 rounded-lg max-h-40 overflow-y-auto w-60">
-          {filteredSuggestions.map((suggestion, index) => (
-            <li
-              key={index}
-              className="p-2 hover:bg-neutral-200 dark:hover:bg-neutral-700 cursor-pointer"
-              onClick={() => handleSuggestionClick(suggestion)}
-            >
-              {suggestion}
-            </li>
-          ))}
-        </ul>
-      )}
+        {filteredSuggestions.length > 0 && (
+          <ul className="bg-neutral-100/80 dark:bg-neutral-800/80 border border-neutral-300 dark:border-neutral-700 rounded-lg max-h-40 overflow-y-auto w-60 absolute top-full mt-1 left-1/2 transform -translate-x-1/2 z-10">
+            {filteredSuggestions.map((suggestion, index) => (
+              <li
+                key={index}
+                className="p-2 hover:bg-neutral-200/70 dark:hover:bg-neutral-700/70 cursor-pointer"
+                onClick={() => handleSuggestionClick(suggestion)}
+              >
+                {suggestion}
+              </li>
+            ))}
+          </ul>
+        )}
+      </form>
 
       <div className="text-neutral-400 dark:text-neutral-600 pt-4 text-center max-w-xl text-balance min-h-28 space-y-4">
         {messages.length > 0 && (
