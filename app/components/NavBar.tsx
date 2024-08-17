@@ -7,12 +7,14 @@ const NavBar = () => {
   const [user, setUser] = useState<{ username: string; email: string } | null>(null);
 
   useEffect(() => {
-    // Fetch user data if a token exists
     const fetchUserData = async () => {
       try {
+        const token = localStorage.getItem('token');
+        if (!token) return;
+
         const res = await fetch('/api/user', {
           headers: {
-            'Authorization': `Bearer ${localStorage.getItem('token')}` // Assuming token is stored in localStorage
+            'Authorization': `Bearer ${token}` // Pass token in Authorization header
           }
         });
 
@@ -31,12 +33,15 @@ const NavBar = () => {
     fetchUserData();
   }, []);
 
-  const handleLogout = () => {
-    // Clear token and user data
-    localStorage.removeItem('token');
-    setUser(null);
-    // Optionally redirect to login page
-    window.location.href = '/login';
+  const handleLogout = async () => {
+    try {
+      await fetch('/api/logout', { method: 'POST' }); // Call the logout API
+      localStorage.removeItem('token'); // Clear token from localStorage
+      setUser(null); // Clear user state
+      window.location.href = '/login'; // Redirect to login page
+    } catch (error) {
+      console.error('Error logging out:', error);
+    }
   };
 
   return (
