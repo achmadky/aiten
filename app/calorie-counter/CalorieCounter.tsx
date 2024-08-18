@@ -47,7 +47,6 @@ export default function CalorieCounter() {
 
   return (
     <div className="p-6 max-w-md mx-auto bg-gray-200 dark:bg-gray-800 text-gray-900 dark:text-gray-200 rounded-lg shadow-md">
-      <h1 className="text-2xl font-bold mb-6 text-center">Calorie Counter</h1>
 
       {/* Results Section */}
       <div className="bg-gray-300 dark:bg-gray-700 p-4 rounded-lg mb-6">
