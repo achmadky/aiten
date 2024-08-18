@@ -1,51 +1,51 @@
 "use client";
 
-import { useState, useEffect } from 'react';
-import { Bar } from 'react-chartjs-2';
-import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js';
+import { useEffect, useState } from "react";
+import { Bar } from "react-chartjs-2";
+import { Chart as ChartJS, Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale } from 'chart.js';
 
-ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
+// Register components for Chart.js
+ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale);
 
-const Dashboard = () => {
-  const [caloriesData, setCaloriesData] = useState<number[]>([]);
+// Function to fetch calories data
+const fetchCalories = async (): Promise<any[]> => {
+  const response = await fetch('/api/calories');
+  if (!response.ok) {
+    throw new Error('Failed to fetch calories data');
+  }
+  const data = await response.json();
+  return data.calories; // Adjust according to your API response
+};
+
+// Helper function to format date
+const formatDate = (dateString: string) => {
+  const date = new Date(dateString);
+  return date.getDate().toString(); // Returns day of the month
+};
+
+export default function CaloriesDashboard() {
+  const [caloriesData, setCaloriesData] = useState<any[]>([]);
 
   useEffect(() => {
-    const fetchCaloriesData = async () => {
+    const loadCaloriesData = async () => {
       try {
-        const token = localStorage.getItem('token');
-        if (!token) return;
-
-        const userId = 1; // Replace with dynamic user ID
-        const response = await fetch(`/api/calories?userId=${userId}`, {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-          },
-        });
-
-        if (response.ok) {
-          const data = await response.json();
-          const labels = data.map((entry: any) => entry.date);
-          const calories = data.map((entry: any) => entry.calories);
-
-          setCaloriesData(calories);
-          // Optionally update labels
-        } else {
-          console.error('Failed to fetch data');
-        }
+        const data = await fetchCalories();
+        setCaloriesData(data);
       } catch (error) {
-        console.error('Error fetching data:', error);
+        console.error('Error loading calories data:', error);
       }
     };
 
-    fetchCaloriesData();
+    loadCaloriesData();
   }, []);
 
-  const data = {
-    labels: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
+  // Format dates to show only the day
+  const chartData = {
+    labels: caloriesData.map((item) => formatDate(item.date)),
     datasets: [
       {
-        label: 'Total Calories Eaten',
-        data: caloriesData,
+        label: 'Calories Consumed',
+        data: caloriesData.map((item) => item.calories),
         backgroundColor: 'rgba(75, 192, 192, 0.2)',
         borderColor: 'rgba(75, 192, 192, 1)',
         borderWidth: 1,
@@ -53,14 +53,28 @@ const Dashboard = () => {
     ],
   };
 
+  const chartOptions = {
+    responsive: true,
+    plugins: {
+      legend: {
+        position: 'top' as const,
+      },
+      tooltip: {
+        callbacks: {
+          label: (context: any) => {
+            return `Calories: ${context.raw}`;
+          },
+        },
+      },
+    },
+  };
+
   return (
-    <div className="p-4">
-      <h2 className="text-2xl font-bold mb-4">Calories Dashboard</h2>
-      <div className="bg-white p-6 rounded-lg shadow-md">
-        <Bar data={data} options={{ responsive: true }} />
+    <div className="p-6 max-w-7xl mx-auto bg-gray-200 dark:bg-gray-800 text-gray-900 dark:text-gray-200 rounded-lg shadow-md">
+      <h1 className="text-3xl font-bold mb-6 text-center">Calories Dashboard</h1>
+      <div className="relative h-96">
+        <Bar data={chartData} options={chartOptions} />
       </div>
     </div>
   );
-};
-
-export default Dashboard;
+}

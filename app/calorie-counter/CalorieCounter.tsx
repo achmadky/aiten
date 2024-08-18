@@ -7,6 +7,7 @@ export default function CalorieCounter() {
   const [lunch, setLunch] = useState<number>(0);
   const [dinner, setDinner] = useState<number>(0);
   const [goal, setGoal] = useState<number>(2000); // Example goal, you can adjust as needed
+  const [message, setMessage] = useState<string | null>(null); // For success or error messages
 
   const totalEaten = breakfast + lunch + dinner;
   const remaining = Math.max(0, goal - totalEaten);
@@ -15,6 +16,33 @@ export default function CalorieCounter() {
     return (e: React.ChangeEvent<HTMLInputElement>) => {
       setter(parseFloat(e.target.value) || 0);
     };
+  }
+
+  async function handleSubmit() {
+    try {
+      const response = await fetch('/api/calories', { // Ensure the correct endpoint
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          userId: 12, // Hardcoded user ID
+          date: new Date().toISOString().split('T')[0], // Date in YYYY-MM-DD format
+          calories: totalEaten,
+        }),
+      });
+  
+      if (response.ok) {
+        const data = await response.json();
+        setMessage(`Success! Calories recorded: ${data.calories} kcal`);
+      } else {
+        const errorData = await response.json();
+        setMessage(`Failed to submit calorie data: ${errorData.message}`);
+      }
+    } catch (error) {
+      console.error('Error submitting calorie data:', error);
+      setMessage('Error occurred while submitting data.');
+    }
   }
 
   return (
@@ -69,6 +97,17 @@ export default function CalorieCounter() {
           />
         </div>
       </div>
+
+      {/* Submit Button */}
+      <button
+        onClick={handleSubmit}
+        className="mt-6 p-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+      >
+        Submit
+      </button>
+
+      {/* Message Section */}
+      {message && <p className="mt-4 text-center font-semibold">{message}</p>}
     </div>
   );
 }
