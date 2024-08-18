@@ -1,25 +1,31 @@
-// app/api/calories/route.ts
-import { NextResponse } from 'next/server';
-import { insertCalories } from '../../app/lib/db'; // Ensure the correct import path
+import type { NextApiRequest, NextApiResponse } from 'next';
+import client from '@/lib/db'; // Ensure this is the correct import path
 
-export async function POST(request: Request) {
-    try {
-      const { userId, date, calories } = await request.json();
-      
-      console.log('Request Data:', { userId, date, calories });
-  
-      if (!userId || !date || !calories) {
-        console.log('Missing required fields');
-        return NextResponse.json({ message: 'Missing required fields' }, { status: 400 });
-      }
-  
-      const result = await insertCalories(userId, date, calories);
-      console.log('Insert Result:', result);
-  
-      return NextResponse.json(result);
-    } catch (error) {
-      console.error('Error submitting calorie data:', error);
-      return NextResponse.json({ message: 'Internal server error' }, { status: 500 });
-    }
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+  if (req.method !== 'POST') {
+    return res.status(405).json({ message: 'Method not allowed' });
   }
-  
+
+  const { date, calories } = req.body;
+
+  // Hardcode userId
+  const userId = '12';
+
+  // Validate request body
+  if (!date || typeof date !== 'string' || !calories || typeof calories !== 'number') {
+    return res.status(400).json({ message: 'Invalid data types or missing fields' });
+  }
+
+  try {
+    // Insert calorie data into the database
+    await client.query(
+      'INSERT INTO calories (user_id, date, calories) VALUES ($1, $2, $3)',
+      [userId, date, calories]
+    );
+
+    return res.status(201).json({ message: 'Calories data submitted successfully' });
+  } catch (error) {
+    console.error('Error submitting calorie data:', error);
+    return res.status(500).json({ message: 'Server error' });
+  }
+}

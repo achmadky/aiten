@@ -20,7 +20,7 @@ export default function CalorieCounter() {
 
   async function handleSubmit() {
     try {
-      const response = await fetch('/api/calories', { // Ensure the correct endpoint
+      const response = await fetch('/api/submit', { // Ensure the correct endpoint
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
