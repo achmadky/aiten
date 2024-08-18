@@ -72,7 +72,7 @@ export default function CaloriesDashboard() {
   return (
     <div className="p-6 max-w-7xl mx-auto bg-gray-200 dark:bg-gray-800 text-gray-900 dark:text-gray-200 rounded-lg shadow-md">
       <h1 className="text-3xl font-bold mb-6 text-center">Calories Dashboard</h1>
-      <div className="relative h-96">
+      <div className="relative" style={{ height: '200px' }}> {/* Adjusted height */}
         <Bar data={chartData} options={chartOptions} />
       </div>
     </div>
