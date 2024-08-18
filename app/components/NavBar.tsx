@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { useState, useEffect } from 'react';
 
 const NavBar = () => {
-  const [user, setUser] = useState<{ username: string; email: string } | null>(null);
+  const [user, setUser] = useState<{ username: string } | null>(null);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -74,23 +74,6 @@ const NavBar = () => {
             <span className="text-base">Dashboard</span>
             <span className="absolute left-0 -bottom-1 w-full h-1 bg-neutral-900 dark:bg-neutral-200 rounded-full transform scale-x-0 group-hover:scale-x-100 transition-transform"></span>
           </Link>
-        </div>
-
-        {/* User info and logout or login on the right side */}
-        <div className="flex items-center space-x-4">
-          {user ? (
-            <div className="flex items-center space-x-4 text-neutral-700 dark:text-neutral-300">
-              <span className="text-sm">{user.username}</span>
-              <span className="text-xs">{user.email}</span>
-              <button onClick={handleLogout} className="text-red-500 hover:text-red-700">
-                Logout
-              </button>
-            </div>
-          ) : (
-            <Link href="/login" className="text-neutral-700 dark:text-neutral-300 hover:text-neutral-900 dark:hover:text-white">
-              Login
-            </Link>
-          )}
         </div>
       </div>
     </nav>
