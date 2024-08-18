@@ -6,13 +6,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.status(405).json({ message: 'Method not allowed' });
   }
 
-  const { date, calories } = req.body;
-
-  // Hardcode userId
-  const userId = '12';
+  const { userId, date, calories } = req.body;
 
   // Validate request body
-  if (!date || typeof date !== 'string' || !calories || typeof calories !== 'number') {
+  if (
+    !userId || typeof userId !== 'number' || 
+    !date || typeof date !== 'string' || 
+    !calories || typeof calories !== 'number'
+  ) {
     return res.status(400).json({ message: 'Invalid data types or missing fields' });
   }
 

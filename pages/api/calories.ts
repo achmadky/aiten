@@ -1,5 +1,3 @@
-// app/api/calories/route.ts
-
 import { NextApiRequest, NextApiResponse } from 'next';
 import { getCaloriesByUserId } from '../../app/lib/db'; // Ensure the correct import path
 
@@ -16,7 +14,12 @@ export default async function handler(
 ) {
   if (req.method === 'GET') {
     try {
-      const userId = 12; // Hardcoded user ID as a string
+      const userId = parseInt(req.query.userId as string, 10); // Extract userId from the query parameters
+
+      if (isNaN(userId)) {
+        return res.status(400).json({ message: 'Invalid user ID' });
+      }
+
       const result = await getCaloriesByUserId(userId);
 
       // Return the fetched data

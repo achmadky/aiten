@@ -7,14 +7,23 @@ import { Chart as ChartJS, Title, Tooltip, Legend, BarElement, CategoryScale, Li
 // Register components for Chart.js
 ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale);
 
-// Function to fetch calories data
-const fetchCalories = async (): Promise<any[]> => {
-  const response = await fetch('/api/calories');
+// Function to fetch calories data for a specific user
+const fetchCalories = async (userId: number): Promise<any[]> => {
+  const response = await fetch(`/api/calories?userId=${userId}`);
   if (!response.ok) {
     throw new Error('Failed to fetch calories data');
   }
   const data = await response.json();
   return data.calories; // Adjust according to your API response
+};
+
+// Function to fetch the user data and extract the ID
+const fetchUser = async (): Promise<{ id: number; email: string }> => {
+  const response = await fetch('/api/user');
+  if (!response.ok) {
+    throw new Error('Failed to fetch user data');
+  }
+  return await response.json();
 };
 
 // Helper function to format date
@@ -29,7 +38,8 @@ export default function CaloriesDashboard() {
   useEffect(() => {
     const loadCaloriesData = async () => {
       try {
-        const data = await fetchCalories();
+        const user = await fetchUser();
+        const data = await fetchCalories(user.id);
         setCaloriesData(data);
       } catch (error) {
         console.error('Error loading calories data:', error);

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export default function CalorieCounter() {
   const [breakfast, setBreakfast] = useState<number>(0);
@@ -8,9 +8,34 @@ export default function CalorieCounter() {
   const [dinner, setDinner] = useState<number>(0);
   const [goal, setGoal] = useState<number>(2000); // Example goal, you can adjust as needed
   const [message, setMessage] = useState<string | null>(null); // For success or error messages
+  const [userId, setUserId] = useState<number | null>(null); // State to store user ID
 
   const totalEaten = breakfast + lunch + dinner;
   const remaining = Math.max(0, goal - totalEaten);
+
+  useEffect(() => {
+    const fetchUserId = async () => {
+      try {
+        const response = await fetch('/api/user', {
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`, // Adjust token fetching if necessary
+          },
+        });
+
+        if (response.ok) {
+          const userData = await response.json();
+          setUserId(userData.id); // Set the user ID from the response
+        } else {
+          setMessage('Failed to fetch user data.');
+        }
+      } catch (error) {
+        console.error('Error fetching user data:', error);
+        setMessage('Error occurred while fetching user data.');
+      }
+    };
+
+    fetchUserId();
+  }, []);
 
   function handleInputChange(setter: React.Dispatch<React.SetStateAction<number>>) {
     return (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -19,22 +44,27 @@ export default function CalorieCounter() {
   }
 
   async function handleSubmit() {
+    if (!userId) {
+      setMessage('User ID is not available.');
+      return;
+    }
+
     try {
-      const response = await fetch('/api/submit', { // Ensure the correct endpoint
+      const response = await fetch('/api/submit', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          userId: 12, // Hardcoded user ID
+          userId, // Use the dynamically fetched userId
           date: new Date().toISOString().split('T')[0], // Date in YYYY-MM-DD format
           calories: totalEaten,
         }),
       });
-  
+
       if (response.ok) {
         const data = await response.json();
-        setMessage(`Success! Calories recorded: ${data.calories} kcal`);
+        setMessage('Success!');
       } else {
         const errorData = await response.json();
         setMessage(`Failed to submit calorie data: ${errorData.message}`);
