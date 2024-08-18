@@ -26,6 +26,15 @@ const NavBar = () => {
               <span className="absolute left-0 -bottom-1 w-full h-1 bg-neutral-900 dark:bg-neutral-200 rounded-full transform scale-x-0 group-hover:scale-x-100 transition-transform"></span>
             </Link>
           </li>
+          <li>
+          <Link
+              href="/dashboard"
+              className="relative group text-neutral-700 dark:text-neutral-300 hover:text-neutral-900 dark:hover:text-white"
+            >
+              <span className="text-lg font-semibold">Dashboard</span>
+              <span className="absolute left-0 -bottom-1 w-full h-1 bg-neutral-900 dark:bg-neutral-200 rounded-full transform scale-x-0 group-hover:scale-x-100 transition-transform"></span>
+            </Link>
+          </li>
         </ul>
       </div>
     </nav>
