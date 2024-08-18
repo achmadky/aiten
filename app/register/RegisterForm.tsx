@@ -11,46 +11,61 @@ const RegisterForm = () => {
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Implement registration logic here
-    // For example, send a POST request to your backend API
+    try {
+      const res = await fetch('/api/auth/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
+      });
 
-    // Example redirect
-    router.push('/login');
+      if (res.ok) {
+        router.push('/login');
+      } else {
+        // Handle error
+        console.error('Registration failed');
+      }
+    } catch (error) {
+      console.error('Error during registration:', error);
+    }
   };
 
   return (
-    <form onSubmit={handleRegister} className="max-w-md mx-auto p-4 bg-gray-100 rounded-lg shadow-md">
-      <h2 className="text-2xl font-bold mb-4">Register</h2>
-      
-      <div className="mb-4">
-        <label className="block text-gray-700">Email:</label>
-        <input
-          type="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          className="w-full p-2 border border-gray-300 rounded"
-          required
-        />
-      </div>
+    <div className="flex items-center justify-center min-h-screen bg-white">
+      <form onSubmit={handleRegister} className="max-w-md w-full p-6 bg-white rounded-lg shadow-lg border border-gray-200">
+        <h2 className="text-3xl font-bold mb-6 text-center text-gray-800">Create Account</h2>
+        
+        <div className="mb-6">
+          <label className="block text-gray-700 text-sm font-medium mb-1">Email Address:</label>
+          <input
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className="w-full p-3 border border-gray-300 rounded-lg bg-gray-50 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-150 ease-in-out"
+            required
+          />
+        </div>
 
-      <div className="mb-4">
-        <label className="block text-gray-700">Password:</label>
-        <input
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          className="w-full p-2 border border-gray-300 rounded"
-          required
-        />
-      </div>
+        <div className="mb-6">
+          <label className="block text-gray-700 text-sm font-medium mb-1">Password:</label>
+          <input
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="w-full p-3 border border-gray-300 rounded-lg bg-gray-50 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-150 ease-in-out"
+            required
+          />
+        </div>
 
-      <button
-        type="submit"
-        className="w-full bg-blue-500 text-white p-2 rounded"
-      >
-        Register
-      </button>
-    </form>
+        <button
+          type="submit"
+          className="w-full bg-blue-500 text-white p-3 rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400 transition duration-150 ease-in-out"
+        >
+          Register
+        </button>
+      </form>
+    </div>
   );
 };
 
