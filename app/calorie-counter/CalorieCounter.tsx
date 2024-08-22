@@ -16,9 +16,9 @@ export default function CalorieCounter() {
   useEffect(() => {
     const fetchUserId = async () => {
       try {
-        const response = await fetch('/api/user', {
+        const response = await fetch("/api/user", {
           headers: {
-            'Authorization': `Bearer ${localStorage.getItem('token')}`, // Adjust token fetching if necessary
+            Authorization: `Bearer ${localStorage.getItem("token")}`, // Adjust token fetching if necessary
           },
         });
 
@@ -26,11 +26,11 @@ export default function CalorieCounter() {
           const userData = await response.json();
           setUserId(userData.id); // Set the user ID from the response
         } else {
-          setMessage('Failed to fetch user data.');
+          setMessage("Failed to fetch user data.");
         }
       } catch (error) {
-        console.error('Error fetching user data:', error);
-        setMessage('Error occurred while fetching user data.');
+        console.error("Error fetching user data:", error);
+        setMessage("Error occurred while fetching user data.");
       }
     };
 
@@ -45,84 +45,96 @@ export default function CalorieCounter() {
 
   async function handleSubmit() {
     if (!userId) {
-      setMessage('User ID is not available.');
+      setMessage("User ID is not available.");
       return;
     }
 
     try {
-      const response = await fetch('/api/submit', {
-        method: 'POST',
+      const response = await fetch("/api/submit", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           userId, // Use the dynamically fetched userId
-          date: new Date().toISOString().split('T')[0], // Date in YYYY-MM-DD format
+          date: new Date().toISOString().split("T")[0], // Date in YYYY-MM-DD format
           calories: totalEaten,
         }),
       });
 
       if (response.ok) {
         const data = await response.json();
-        setMessage('Success!');
+        setMessage("Success!");
       } else {
         const errorData = await response.json();
         setMessage(`Failed to submit calorie data: ${errorData.message}`);
       }
     } catch (error) {
-      console.error('Error submitting calorie data:', error);
-      setMessage('Error occurred while submitting data.');
+      console.error("Error submitting calorie data:", error);
+      setMessage("Error occurred while submitting data.");
     }
   }
 
   return (
-    <div className="p-6 max-w-md mx-auto bg-gray-200 dark:bg-gray-800 text-gray-900 dark:text-gray-200 rounded-lg shadow-md">
+    <div className="max-w-lg mx-auto bg-white dark:bg-gray-900 rounded-xl shadow-md overflow-hidden mt-10 p-6">
+      
+      {/* Header Section */}
+      <div className="text-center mb-6">
+        <h2 className="text-3xl font-bold text-gray-800 dark:text-white">
+
+        </h2>
+        <p className="text-gray-500 dark:text-gray-400">
+          Track your daily calorie intake
+        </p>
+      </div>
 
       {/* Results Section */}
-      <div className="bg-gray-300 dark:bg-gray-700 p-4 rounded-lg mb-6">
-        <div className="flex justify-between mb-3">
-          <span className="text-lg font-semibold">Total Eaten:</span>
-          <span className="text-lg font-semibold">{totalEaten} kcal</span>
-        </div>
-        <div className="flex justify-between mb-3">
-          <span className="text-lg font-semibold">Remaining:</span>
-          <span className="text-lg font-semibold">{remaining} kcal</span>
-        </div>
-        <div className="flex justify-between">
-          <span className="text-lg font-semibold">Goal:</span>
-          <span className="text-lg font-semibold">{goal} kcal</span>
+      <div className="bg-gray-100 dark:bg-gray-800 p-5 rounded-xl mb-6">
+        <div className="grid grid-cols-3 gap-4 text-center">
+          <div>
+            <h3 className="text-lg font-semibold text-gray-700 dark:text-gray-300">Total Eaten</h3>
+            <p className="text-2xl font-bold text-gray-800 dark:text-white">{totalEaten} kcal</p>
+          </div>
+          <div>
+            <h3 className="text-lg font-semibold text-gray-700 dark:text-gray-300">Remaining</h3>
+            <p className="text-2xl font-bold text-gray-800 dark:text-white">{remaining} kcal</p>
+          </div>
+          <div>
+            <h3 className="text-lg font-semibold text-gray-700 dark:text-gray-300">Goal</h3>
+            <p className="text-2xl font-bold text-gray-800 dark:text-white">{goal} kcal</p>
+          </div>
         </div>
       </div>
 
       {/* Input Section */}
-      <div className="flex flex-col space-y-4">
-        <div className="flex items-center justify-between">
-          <label className="text-lg font-semibold">Breakfast:</label>
+      <div className="space-y-5">
+        <div className="flex flex-col">
+          <label className="text-lg font-semibold text-gray-700 dark:text-gray-300">Breakfast</label>
           <input
             type="number"
             placeholder="Enter breakfast calories"
             onChange={handleInputChange(setBreakfast)}
-            className="p-2 border border-gray-400 rounded w-1/2 bg-gray-100 dark:bg-gray-600 text-gray-800 dark:text-gray-200 placeholder-gray-500"
+            className="mt-1 p-3 rounded-lg bg-gray-50 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 focus:ring-2 focus:ring-blue-500"
           />
         </div>
 
-        <div className="flex items-center justify-between">
-          <label className="text-lg font-semibold">Lunch:</label>
+        <div className="flex flex-col">
+          <label className="text-lg font-semibold text-gray-700 dark:text-gray-300">Lunch</label>
           <input
             type="number"
             placeholder="Enter lunch calories"
             onChange={handleInputChange(setLunch)}
-            className="p-2 border border-gray-400 rounded w-1/2 bg-gray-100 dark:bg-gray-600 text-gray-800 dark:text-gray-200 placeholder-gray-500"
+            className="mt-1 p-3 rounded-lg bg-gray-50 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 focus:ring-2 focus:ring-blue-500"
           />
         </div>
 
-        <div className="flex items-center justify-between">
-          <label className="text-lg font-semibold">Dinner:</label>
+        <div className="flex flex-col">
+          <label className="text-lg font-semibold text-gray-700 dark:text-gray-300">Dinner</label>
           <input
             type="number"
             placeholder="Enter dinner calories"
             onChange={handleInputChange(setDinner)}
-            className="p-2 border border-gray-400 rounded w-1/2 bg-gray-100 dark:bg-gray-600 text-gray-800 dark:text-gray-200 placeholder-gray-500"
+            className="mt-1 p-3 rounded-lg bg-gray-50 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 focus:ring-2 focus:ring-blue-500"
           />
         </div>
       </div>
@@ -130,13 +142,13 @@ export default function CalorieCounter() {
       {/* Submit Button */}
       <button
         onClick={handleSubmit}
-        className="mt-6 p-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+        className="w-full mt-6 p-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
       >
         Submit
       </button>
 
       {/* Message Section */}
-      {message && <p className="mt-4 text-center font-semibold">{message}</p>}
+      {message && <p className="mt-4 text-center font-semibold text-red-500 dark:text-red-400">{message}</p>}
     </div>
   );
 }
