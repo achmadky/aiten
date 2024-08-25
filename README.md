@@ -1,19 +1,56 @@
-# [Swift](https://swift-ai.vercel.app)
 
-Swift is a fast AI voice assistant.
+# Calories Dashboard App
 
--   [Groq](https://groq.com) is used for fast inference of [OpenAI Whisper](https://github.com/openai/whisper) (for transcription) and [Meta Llama 3](https://llama.meta.com/llama3/) (for generating the text response).
--   [Cartesia](https://cartesia.ai)'s [Sonic](https://cartesia.ai/sonic) voice model is used for fast speech synthesis, which is streamed to the frontend.
--   [VAD](https://www.vad.ricky0123.com/) is used to detect when the user is talking, and run callbacks on speech segments.
--   The app is a [Next.js](https://nextjs.org) project written in TypeScript and deployed to [Vercel](https://vercel.com).
+This application tracks and displays calorie consumption data in a user-friendly dashboard. Users can submit their calorie intake without needing to log in, with data cached locally on their devices and synced when online.
 
-Thank you to the teams at Groq and Cartesia for providing access to their APIs for this demo!
+## Features
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fai-ng%2Fswift&env=GROQ_API_KEY,CARTESIA_API_KEY&envDescription=Groq%20and%20Cartesia's%20APIs%20are%20used%20for%20transcription%2C%20text%20generation%2C%20and%20speech%20synthesis.&project-name=swift&repository-name=swift&demo-title=Swift&demo-description=A%20fast%2C%20open-source%20voice%20assistant%20powered%20by%20Groq%2C%20Cartesia%2C%20and%20Vercel.&demo-url=https%3A%2F%2Fswift-ai.vercel.app&demo-image=https%3A%2F%2Fswift-ai.vercel.app%2Fopengraph-image.png)
+- **Calories Dashboard**: Visualize calorie consumption data using a bar chart.
+- **Local Data Storage**: User submissions are cached locally using Local Storage or IndexedDB.
+- **Automatic Sync**: Cached data is automatically synced with the server when the user is online.
+- **No Login Required**: Users can interact with the app without creating an account or logging in.
 
-## Developing
+## Installation
 
--   Clone the repository
--   Copy `.env.example` to `.env.local` and fill in the environment variables.
--   Run `pnpm install` to install dependencies.
--   Run `pnpm dev` to start the development server.
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/your-username/calories-dashboard-app.git
+   cd calories-dashboard-app
+   ```
+
+2. **Install dependencies:**
+   ```bash
+   npm install
+   ```
+
+3. **Set up environment variables:**
+   - Create a `.env.local` file in the root directory.
+   - Add your environment variables as needed, e.g., database connection strings.
+
+4. **Run the development server:**
+   ```bash
+   npm run dev
+   ```
+
+5. **Build for production:**
+   ```bash
+   npm run build
+   npm start
+   ```
+
+## Usage
+
+1. **Track Calorie Intake**: Users can submit their calorie data, which will be displayed on the dashboard.
+2. **Offline Mode**: If the user is offline, their submissions are stored locally and synced when they reconnect.
+3. **View Dashboard**: Calorie data is visualized on a bar chart, showing daily intake.
+
+## Technologies
+
+- **Frontend**: React, Next.js, Tailwind CSS, Chart.js
+- **Backend**: Node.js, Express (or serverless functions if hosted on Vercel)
+- **Storage**: Local Storage, IndexedDB
+- **Hosting**: Vercel
+
+## License
+
+This project is licensed under the MIT License.
