@@ -25,7 +25,7 @@ export default function FoodInfo() {
   useEffect(() => {
     async function fetchFoodList() {
       try {
-        const response = await fetch("http://localhost:3000/api/list");
+        const response = await fetch("https://aiten.vercel.app/api/list");
         if (!response.ok) {
           throw new Error("Failed to fetch food list");
         }
